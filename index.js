@@ -28,27 +28,36 @@ client.on("messageCreate", async (message) => {
 
 
 async function KMLTR (message) {
-  if(message.args[1] == message.mentions.members.first() || message.args[2] == message.mentions.members.first() || message.args[3] == message.mentions.members.first() || message.args[4] == message.mentions.members.first() || message.args[2] == null){
-    await message.channel.send("ale jesteś dupa, źle wpisałeś komende");
-  }else
+
+  let member = message.mentions.members.first();
+  let role = message.guild.roles.cache.get("955262645257273355");
+  let merc = message.guild.roles.cache.get("955262682838216744");
+
   if(message.args[1] == "nick" && message.args[3] == "ranga"){
-    await message.channel.send("no dobra zmienie <@"+message.mentions.members.first()+"> ten nick na "+message.args[2]+" i dam range");
+    await message.channel.send("no dobra zmienie <@"+member+"> ten nick na "+message.args[2]+" i dam range <@&"+role+">");
+    await member.setNickname(message.args[2].toString());
+    await member.roles.add(role);
   }else
-  if(message.args[1] == "nick" && message.args[4] == "najemnik"){
-    await message.channel.send("no dobra zmienie <@"+message.mentions.members.first()+"> ten nick na "+message.args[2]+" i dam najemnika");
+  if(message.args[1] == "nick" && message.args[3] == "najemnik"){
+    await message.channel.send("no dobra zmienie <@"+member+"> ten nick na "+message.args[2]+" i dam range <@&"+merc+">");
+    await member.setNickname(message.args[2].toString());
+    await member.roles.add(merc);
   }else
   if(message.args[1] == "nick"){
-    await message.channel.send("no dobra zmienie <@"+message.mentions.members.first()+"> ten nick na "+message.args[2]);
+    await message.channel.send("no dobra zmienie <@"+member+"> ten nick na "+message.args[2]);
+    await member.setNickname(message.args[2].toString());
   }else
   if(message.args[1] == "ranga"){
-    await message.channel.send("no dobra dam <@"+message.mentions.members.first()+"> te range");
+    await message.channel.send("no dobra dam <@"+member+"> te range <@&"+role+">");
+    await member.roles.add(role);
   }else
   if(message.args[1] == "najemnik"){
-    await message.channel.send("no dobra dam <@"+message.mentions.members.first()+"> tego najemnika");
+    await message.channel.send("no dobra dam <@"+member+"> tego <@&"+merc+">");
+    await member.roles.add(merc);
   }else{
-    await message.channel.send("co chcesz psie?")
+    ERROR(message);
   }
-    
+  return 0;
 }
 
 async function ZJDCZ(message) {
@@ -57,6 +66,33 @@ async function ZJDCZ(message) {
 
 async function SCAML(message) {
   await message.channel.send("co chcesz psie z SCAML?");
+}
+
+async function CHECK(message){
+  if(message.args[1] == "nick" && message.args[3] == "ranga"){
+    return 1;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "najemnik"){
+    return 2;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "zabierz"){
+    return 3;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "podjemnik"){
+    return 4;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "ranga" && message.args[4] == "podjemnik"){
+    return 5;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "podjemnik" && message.args[4] == "ranga"){
+    return 6;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "najemnik" && message.args[4] == "zabierz"){
+    return 7;
+  }
+  if(message.args[1] == "nick" && message.args[3] == "zabierz" && message.args[4] == "najemnik"){
+    return 8;
+  }
 }
 
 
