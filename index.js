@@ -69,14 +69,14 @@ async function ERROR(message, osoba, ranga, najemnik){
 
 //jeśli nie ma błędów to sprawdza jakie jest polecenie i wykonuje
 async function CHECK(message, osoba, ranga, najemnik){
-  let odpowiedz = "no dobra, "+osoba.displayName+" ";
+  let odpowiedz = "no dobra, <@"+osoba+"> ";
   let logi = "KTO: <@"+message.author.id+"> KOMU: <@"+osoba+"> CO: ";
     //zmiana nicku
   if(message.args.includes("nick")){
     //logi
-    await logi.concat("zmiana nicku z "+osoba.displayName+" na "+message.args[2]+", ");
+     logi += "zmiana nicku z "+osoba.displayName+" na "+message.args[2]+", ";
     //odpowiedz
-    await odpowiedz.concat("zmienie nick na "+message.args[2]+", ");
+     odpowiedz += "zmienie nick na "+message.args[2]+", ";
     await osoba.setNickname(message.args[2].toString());
     
   }
@@ -84,33 +84,36 @@ async function CHECK(message, osoba, ranga, najemnik){
   //dawanie rangi
   if(message.args.includes("ranga")){
     //logi
-    await logi.concat("dał range "+ranga.name+", ");
+     logi += "dał range "+ranga.name+", ";
     //odpowiedz
-    await odpowiedz.concat("dam range "+ranga.name+", ");
+    odpowiedz += "dam range "+ranga.name+", ";
     await osoba.roles.add(ranga);
   }
 
   //dawanie najemnika
   if(message.args.includes("najemnik")){
     //logi
-    await logi.concat("dał range "+najemnik.name+", ");
+    logi += "dał range "+najemnik.name+", ";
     //odpowiedz
-    await odpowiedz.concat("dam range "+najemnik.name+", ");
+    odpowiedz += "dam range "+najemnik.name+", ";
     await osoba.roles.add(najemnik);
   }
 
   //zabieranie rangi
   if(message.args.includes("wyrzuc")){
     //logi
-    await logi.concat("zabrał range "+ranga.name+", ");
+    logi += "zabrał range "+ranga.name+", ";
     //odpowiedz
-    await odpowiedz.concat("zabiore range "+ranga.name+", ");
+    odpowiedz += "zabiore range "+ranga.name+", ";
     await osoba.roles.remove(ranga);
   }
 
   //zabieranie najemnika
   if(message.args.includes("zabierz")){
-    await odpowiedz.concat("zabiore range "+najemnik.name+", ");
+    //logi
+    logi += "zabrał range "+najemnik.name+", ";
+    //odpowiedz
+    odpowiedz += "zabiore range "+najemnik.name+", ";
     await osoba.roles.remove(najemnik);
   }
 
