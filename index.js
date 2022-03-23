@@ -10,17 +10,17 @@ client.on("ready", async () => {
 
   const prefix = "onegai";
   //id logi
-  const logi_kanal = "955186031320236112" ;
+  const logi_kanal = "842144844729942056" ;
   //id zjdcz
-  const zjdcz_kanal = "955185855713149079";
-  const zjdcz_ranga = "955262645257273355";
-  const zjdcz_najemnik = "955262682838216744";
+  const zjdcz_kanal = "880188280967151686";
+  const zjdcz_ranga = "880188082077442149";
+  const zjdcz_najemnik = "933437854414151700";
   //id scaml
-  const scaml_kanal = "955186031320236112";
-  const scaml_ranga = "955262682838216744";
-  const scaml_najemnik = "955262645257273355";
+  const scaml_kanal = "906580276250026005";
+  const scaml_ranga = "906668240309223495";
+  const scaml_najemnik = "956290503459086337";
 
-  
+
 
 
 client.on("messageCreate", async (message) => {
@@ -42,7 +42,8 @@ async function ZJDCZ(message) {
   let osoba = message.mentions.members.first(); //przypisuje osobę wspomnianą do zmiennej
   let ranga = message.guild.roles.cache.get(zjdcz_ranga); // przypisuje rangę klanu do zmiennej
   let najemnik = message.guild.roles.cache.get(zjdcz_najemnik); // przypisuje rangę najemnika klanu do zmiennej
-  if(await ERROR(message) == true){
+  
+  if(await ERROR(message)){
     await CHECK(message, osoba, ranga, najemnik,"zjdcz");
   }
     
@@ -53,7 +54,8 @@ async function ZJDCZ(message) {
 async function SCAML(message) {
   let osoba = message.mentions.members.first(); //przypisuje osobę wspomnianą do zmiennej
   let ranga = message.guild.roles.cache.get(scaml_ranga); // przypisuje rangę klanu do zmiennej
-  let najemnik = message.guild.roles.cache.get(scaml_najemnik); // przypisuje rangę najemnika klanu do zmiennej
+  let najemnik = message.guild.roles.cache.get(scaml_najemnik);// przypisuje rangę najemnika klanu do zmiennej
+  
   if(await ERROR(message)){
     await CHECK(message, osoba, ranga, najemnik,"scaml");
   }
@@ -65,63 +67,99 @@ async function SCAML(message) {
 
 //sprawdza błędy w poleceniu
 async function ERROR(message){
-  //nie oznaczona osoba
-  if(message.mentions.members.first()==null){
-    await message.channel.send("nie oznaczyłeś osoby poprawna komenda to: onegai [komendy jakie chcesz wpisać] [oznaczona osoba]");
-    return false;//nie wpisany nick
-  }else if(message.args[1] == "nick" && (message.args[2] == "ranga" || message.args[2] == "najemnik" || message.args[2] == "zabierz" || message.args[2] == "wyrzuc")){
-    await message.channel.send("nie wpisałeś nicku, poprawna komenda to: onegai nick [nick na jaki zmienic]");
-    return false;//jednoczesnie wpisana ranga i wyrzuc
-  }else if(message.args.includes("ranga") && message.args.includes("wyrzuc")){
-    await message.channel.send("Nie możesz jednocześnie dać i zabrać range klanową, jeśli chcesz zabrać najemnika to wpisz: zabierz");
-    return false;//jednoczesnie wpisana najemnik i zabierz
-  }else if(message.args.includes("najemnik") && message.args.includes("zabierz")){
-    await message.channel.send("Nie możesz jednocześnie dać i zabrać range najemnika, jeśli chcesz wyrzucic z klanu to wpisz: wyrzuc");
-    return false;//nie wpisana żadna komenda
-  }else if(!message.args.includes("nick") && !message.args.includes("ranga") && !message.args.includes("najemnik") && !message.args.includes("zabierz") && !message.args.includes("wyrzuc")){
-    await message.channel.send("błędnie wpisane");
-    return false;
-  }else {//jeśli wszystko działa to wykonuje polecenia
-    return true;
-  }
-  return false;
+
+  if(
+    await ERROR_mention(message) ||
+    await ERROR_nick(message) ||
+    await ERROR_ranga_wyrzuc(message) ||
+    await ERROR_najemnik_zabierz(message) ||
+    await ERROR_brak_komendy(message) 
+  ){
+    return false; //jest bład
+  } else return true;  // nie ma błędu
+ 
 }
 
+//sprawdza czy jest oznaczona osoba
+async function ERROR_mention(message){
+  
+  if(message.mentions.members.first()==null){
+      await message.channel.send("nie oznaczyłeś osoby poprawna komenda to: onegai [komendy jakie chcesz wpisać] [oznaczona osoba]");
+      return true;
+    } else return false;
+  
+}
+
+//sprawdza czy po komendzie nick jest wpisany pseudonim
+async function ERROR_nick(message){
+  
+   if(message.args[1] == "nick" && (message.args[2] == "ranga" || message.args[2] == "najemnik" || message.args[2] == "zabierz" || message.args[2] == "wyrzuc" || message.args[2].startsWith("<@"))){
+     await message.channel.send("nie wpisałeś nicku, poprawna komenda to: onegai nick [nick na jaki zmienic]");
+      return true;
+   } else return false;
+  
+}
+
+//sprawdza czy jednocześnie są wpisane komendy ranga i wyrzuc
+async function ERROR_ranga_wyrzuc(message){
+  
+  if(message.args.includes("ranga") && message.args.includes("wyrzuc")){
+      await message.channel.send("Nie możesz jednocześnie dać i zabrać range klanową, jeśli chcesz zabrać najemnika to wpisz: zabierz");
+      return true;
+    } else return false;
+  
+}
+
+//sprawdza czy jednocześnie są wpisane komendy najemnik i zabierz
+async function ERROR_najemnik_zabierz(message){
+  
+  if(message.args.includes("najemnik") && message.args.includes("zabierz")){
+      await message.channel.send("Nie możesz jednocześnie dać i zabrać range najemnika, jeśli chcesz wyrzucic z klanu to wpisz: wyrzuc");
+      return true;
+    } else return false;
+  
+}
+
+//sprawdza czy podane są komendy
+async function ERROR_brak_komendy(message){
+  
+  if(!message.args.includes("nick") && !message.args.includes("ranga") && !message.args.includes("najemnik") && !message.args.includes("zabierz") && !message.args.includes("wyrzuc"))
+    {
+      await message.channel.send("błędnie wpisane");
+      return true;
+    } else return false;
+  
+}
 
 //jeśli nie ma błędów to sprawdza jakie jest polecenie i wykonuje
 async function CHECK(message, osoba, ranga, najemnik,klan){
   let logi = `KTO: ${message.author}\n KOMU: ${osoba}\n CO:\n `; 
     //zmiana nicku
   if(message.args.includes("nick")){
-    //logi
-    logi += `zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
+    logi += `- zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
     await osoba.setNickname(message.args[2].toString());
   }
 
   //dawanie rangi
   if(message.args.includes("ranga")){
-    //logi
     logi += `- dał range ${ranga.name}\n `;
     await osoba.roles.add(ranga);
   }
 
   //dawanie najemnika
   if(message.args.includes("najemnik")){
-    //logi
     logi += `- dał range ${najemnik.name}\n `;
     await osoba.roles.add(najemnik);
   }
 
   //zabieranie rangi
   if(message.args.includes("wyrzuc")){
-    //logi
     logi += `- zabrał range ${ranga.name}\n` ;
     await osoba.roles.remove(ranga);
   }
 
   //zabieranie najemnika
   if(message.args.includes("zabierz")){
-    //logi
     logi += `- zabrał range ${najemnik.name}\n` ;
     await osoba.roles.remove(najemnik);
   }
