@@ -1,5 +1,5 @@
 // Discord AnimeBOT#8064
-const { Client, Intents , MessageEmbed} = require("discord.js");
+const { Client, Intents , MessageEmbed, Permissions} = require("discord.js");
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 });
@@ -19,6 +19,26 @@ client.on("ready", async () => {
   const scaml_kanal = "906580276250026005";
   const scaml_ranga = "906668240309223495";
   const scaml_najemnik = "956290503459086337";
+
+  //embed
+  const scaml_embed = "Zmiana w SCAML";
+  const scaml_logo = "https://eu.wargaming.net/clans/media/clans/emblems/cl_624/500213624/emblem_195x195.png";
+  const zjdcz_embed = "Zmiana w ZJDCZ";
+  const zjdcz_logo = "https://eu.wargaming.net/clans/media/clans/emblems/cl_867/500211867/emblem_195x195.png";
+
+async function EMBED(tytul,opis,logo,message){
+  
+  const embed = new MessageEmbed()
+  .setAuthor(tytul,logo,"")
+  .setColor(message.guild.roles.cache.get(zjdcz_ranga).color)
+  .setDescription(opis);
+
+  await client.channels.cache.get(logi_kanal).send({embeds : [embed]});
+  await message.channel.send({embeds : [embed] });
+  return 0;
+  
+}
+  
 
 
 
@@ -73,7 +93,8 @@ async function ERROR(message){
     await ERROR_nick(message) ||
     await ERROR_ranga_wyrzuc(message) ||
     await ERROR_najemnik_zabierz(message) ||
-    await ERROR_brak_komendy(message) 
+    await ERROR_brak_komendy(message) ||
+    await ERROR_brak_permisji(message)
   ){
     return false; //jest bład
   } else return true;  // nie ma błędu
@@ -84,9 +105,9 @@ async function ERROR(message){
 async function ERROR_mention(message){
   
   if(message.mentions.members.first()==null){
-      await message.channel.send("nie oznaczyłeś osoby poprawna komenda to: onegai [komendy jakie chcesz wpisać] [oznaczona osoba]");
-      return true;
-    } else return false;
+      await message.channel.send("<:anger:957273727765184593> Nie oznaczyłeś osoby, poprawna komenda to: onegai [komendy jakie chcesz wpisać] [oznaczona osoba]");
+      return true; // jest błąd
+    } else return false; // nie ma błędu
   
 }
 
@@ -94,9 +115,9 @@ async function ERROR_mention(message){
 async function ERROR_nick(message){
   
    if(message.args[1] == "nick" && (message.args[2] == "ranga" || message.args[2] == "najemnik" || message.args[2] == "zabierz" || message.args[2] == "wyrzuc" || message.args[2].startsWith("<@"))){
-     await message.channel.send("nie wpisałeś nicku, poprawna komenda to: onegai nick [nick na jaki zmienic]");
-      return true;
-   } else return false;
+     await message.channel.send("<:anger:957273727765184593> Nie wpisałeś nicku, poprawna komenda to: onegai nick [nick na jaki zmienic] [oznaczona osoba]");
+      return true; // jest błąd
+   } else return false; // nie ma błędu
   
 }
 
@@ -104,9 +125,9 @@ async function ERROR_nick(message){
 async function ERROR_ranga_wyrzuc(message){
   
   if(message.args.includes("ranga") && message.args.includes("wyrzuc")){
-      await message.channel.send("Nie możesz jednocześnie dać i zabrać range klanową, jeśli chcesz zabrać najemnika to wpisz: zabierz");
-      return true;
-    } else return false;
+      await message.channel.send("<:anger:957273727765184593> Nie możesz jednocześnie dać i zabrać range klanową, jeśli chcesz zabrać najemnika to wpisz: zabierz");
+      return true; //jest błąd
+    } else return false; //nie ma błędu
   
 }
 
@@ -114,9 +135,9 @@ async function ERROR_ranga_wyrzuc(message){
 async function ERROR_najemnik_zabierz(message){
   
   if(message.args.includes("najemnik") && message.args.includes("zabierz")){
-      await message.channel.send("Nie możesz jednocześnie dać i zabrać range najemnika, jeśli chcesz wyrzucic z klanu to wpisz: wyrzuc");
-      return true;
-    } else return false;
+      await message.channel.send("<:anger:957273727765184593> Nie możesz jednocześnie dać i zabrać range najemnika, jeśli chcesz wyrzucic z klanu to wpisz: wyrzuc");
+      return true; //jest błąd
+    } else return false; //nie ma błędu
   
 }
 
@@ -125,65 +146,66 @@ async function ERROR_brak_komendy(message){
   
   if(!message.args.includes("nick") && !message.args.includes("ranga") && !message.args.includes("najemnik") && !message.args.includes("zabierz") && !message.args.includes("wyrzuc"))
     {
-      await message.channel.send("błędnie wpisane");
-      return true;
-    } else return false;
+      await message.channel.send("<:anger:957273727765184593> Błędna komenda, prawidłowe komendy to:\nnick\nranga\nnajemnik\nzabierz\nwyrzuc");
+      return true; //jest błąd
+    } else return false; //nie ma błędu
   
+}
+
+//sprawdza czy oznaczona osoba to Admin
+async function ERROR_brak_permisji(message){
+  
+  if(message.guild.members.cache.get(message.mentions.members.first().id).permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
+    await message.channel.send("<:anger:957273727765184593> Nie mam uprawnień aby zmienić cokolwiek u tej osoby");
+    return true; //jest błąd
+  } else return false; //nie ma błędu
 }
 
 //jeśli nie ma błędów to sprawdza jakie jest polecenie i wykonuje
 async function CHECK(message, osoba, ranga, najemnik,klan){
-  let logi = `KTO: ${message.author}\n KOMU: ${osoba}\n CO:\n `; 
+  let logi = `KTO: ${message.author}\nKOMU: ${osoba}\nCO:\n `; 
     //zmiana nicku
   if(message.args.includes("nick")){
-    logi += `- zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
+    logi += `<:white_check_mark:957272359675363328> zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
     await osoba.setNickname(message.args[2].toString());
   }
 
   //dawanie rangi
   if(message.args.includes("ranga")){
-    logi += `- dał range ${ranga.name}\n `;
+    logi += `<:white_check_mark:957272359675363328> dał range ${ranga.name}\n`;
     await osoba.roles.add(ranga);
   }
 
   //dawanie najemnika
   if(message.args.includes("najemnik")){
-    logi += `- dał range ${najemnik.name}\n `;
+    logi += `<:white_check_mark:957272359675363328> dał range ${najemnik.name}\n`;
     await osoba.roles.add(najemnik);
   }
 
   //zabieranie rangi
   if(message.args.includes("wyrzuc")){
-    logi += `- zabrał range ${ranga.name}\n` ;
+    logi += `<:white_check_mark:957272359675363328> zabrał range ${ranga.name}\n`;
     await osoba.roles.remove(ranga);
   }
 
   //zabieranie najemnika
   if(message.args.includes("zabierz")){
-    logi += `- zabrał range ${najemnik.name}\n` ;
+    logi += `<:white_check_mark:957272359675363328> zabrał range ${najemnik.name}\n`;
     await osoba.roles.remove(najemnik);
   }
-
-  //embed zjdcz
-  const zjdcz_embed = new MessageEmbed()
-  .setAuthor("Zmiana w ZJDCZ", "https://eu.wargaming.net/clans/media/clans/emblems/cl_867/500211867/emblem_195x195.png","")
-  .setColor(message.guild.roles.cache.get(zjdcz_ranga).color);
-  //embed scaml
-  const scaml_embed = new MessageEmbed()
-  .setAuthor("Zmiana w SCAML", "https://eu.wargaming.net/clans/media/clans/emblems/cl_624/500213624/emblem_195x195.png","")
-  .setColor(message.guild.roles.cache.get(scaml_ranga).color);
   
+  //wysyłanie odpowiedzi
   if(klan == "zjdcz"){
-    await client.channels.cache.get(logi_kanal).send({embeds : [zjdcz_embed.setDescription(logi)]});
-    await message.channel.send({embeds : [zjdcz_embed.setDescription(logi)]});
+    await EMBED("Zmiana w ZJDCZ",logi,zjdcz_logo,message);
   }
   if (klan == "scaml"){
-    await client.channels.cache.get(logi_kanal).send({embeds : [scaml_embed.setDescription(logi)]});
-    await message.channel.send({embeds : [scaml_embed.setDescription(logi)]});
+    await EMBED("Zmiana w ZJDCZ",logi,zjdcz_logo,message);
   }
   
   return 0;
 }
+
+
 
 
 client.login(process.env['token']);
