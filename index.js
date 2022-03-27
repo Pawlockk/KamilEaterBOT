@@ -1,12 +1,22 @@
 // Discord AnimeBOT#8064
 const { Client, Intents , MessageEmbed, Permissions} = require("discord.js");
 const client = new Client({
+  presence: {
+        status: 'online',
+        afk: false,
+        activities: [{
+            name: "UwU",
+            type: "WATCHING",
+        }],
+  },
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 });
 
 client.on("ready", async () => {
   console.log(client.user.username, client.user.id);
 });
+
+//client.user.setPresence({ activities: [{ name: 'with discord.js' }], status: 'idle' });
 
   const prefix = "onegai";
   //id logi
