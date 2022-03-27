@@ -111,7 +111,7 @@ async function ERROR(message){
 async function ERROR_mention(message){
   
   if(message.mentions.members.first()==null){
-      const tekst = "<:anger:957273727765184593> Nie oznaczyłeś osoby, poprawna komenda to:\nonegai [komendy jakie chcesz wpisać] [oznaczona osoba]";
+      const tekst = "Nie oznaczyłeś osoby, poprawna komenda to:\nonegai [komendy jakie chcesz wpisać] [oznaczona osoba]";
       await EMBED("Błąd składni",tekst,error_logo,message,"#ED4245",true);
       return true; // jest błąd
     } else return false; // nie ma błędu
@@ -122,7 +122,7 @@ async function ERROR_mention(message){
 async function ERROR_nick(message){
   
    if(message.args[1] == "nick" && (message.args[2] == "ranga" || message.args[2] == "najemnik" || message.args[2] == "zabierz" || message.args[2] == "wyrzuc" || message.args[2].startsWith("<@"))){
-     const tekst = "<:anger:957273727765184593> Nie wpisałeś nicku, poprawna komenda to: \nonegai nick [nick na jaki zmienic] [oznaczona osoba]";
+     const tekst = "Nie wpisałeś nicku, poprawna komenda to: \nonegai nick [nick na jaki zmienic] [oznaczona osoba]";
      await EMBED("Błąd składni",tekst,error_logo,message,"#ED4245",true);
       return true; // jest błąd
    } else return false; // nie ma błędu
@@ -133,7 +133,7 @@ async function ERROR_nick(message){
 async function ERROR_ranga_wyrzuc(message){
   
   if(message.args.includes("ranga") && message.args.includes("wyrzuc")){
-      const tekst = "<:anger:957273727765184593> Nie możesz jednocześnie dać i zabrać range klanową, \njeśli chcesz zabrać najemnika to wpisz: zabierz";
+      const tekst = "Nie możesz jednocześnie dać i zabrać range klanową, \njeśli chcesz zabrać najemnika to wpisz: zabierz";
       await EMBED("Błąd składni",tekst,error_logo,message,"#ED4245",true);
       return true; //jest błąd
     } else return false; //nie ma błędu
@@ -144,7 +144,7 @@ async function ERROR_ranga_wyrzuc(message){
 async function ERROR_najemnik_zabierz(message){
   
   if(message.args.includes("najemnik") && message.args.includes("zabierz")){
-      const tekst = "<:anger:957273727765184593> Nie możesz jednocześnie dać i zabrać range najemnika, \njeśli chcesz wyrzucic z klanu to wpisz: wyrzuc";
+      const tekst = "Nie możesz jednocześnie dać i zabrać range najemnika, \njeśli chcesz wyrzucic z klanu to wpisz: wyrzuc";
       await EMBED("Błąd składni",tekst,error_logo,message,"#ED4245",true);
       return true; //jest błąd
     } else return false; //nie ma błędu
@@ -156,7 +156,7 @@ async function ERROR_brak_komendy(message){
   
   if(!message.args.includes("nick") && !message.args.includes("ranga") && !message.args.includes("najemnik") && !message.args.includes("zabierz") && !message.args.includes("wyrzuc"))
     {
-      const tekst = "<:anger:957273727765184593> Błędna komenda, prawidłowe komendy to:\nnick\nranga\nnajemnik\nzabierz\nwyrzuc";
+      const tekst = "Błędna komenda, prawidłowe komendy to:\nnick\nranga\nnajemnik\nzabierz\nwyrzuc";
       await EMBED("Błędna komenda",tekst,error_logo,message,"#ED4245",true);
       return true; //jest błąd
     } else return false; //nie ma błędu
@@ -166,7 +166,7 @@ async function ERROR_brak_komendy(message){
 //sprawdza czy oznaczona osoba to Admin
 async function ERROR_brak_permisji(message){
    if(message.guild.members.cache.get(message.mentions.members.first().id).permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
-    const tekst = "<:anger:957273727765184593> Nie mam uprawnień aby zmienić cokolwiek u tej osoby";
+    const tekst = "Nie mam uprawnień aby zmienić cokolwiek u tej osoby";
     await EMBED("Brak uprawnień",tekst,error_logo,message,"#ED4245",true);
     return true; //jest błąd
   } else return false; //nie ma błędu
