@@ -40,7 +40,8 @@ async function EMBED(tytul,opis,logo,message,kolor,error){
   if(error){ //sprawdza czy embed ma zwrócić error
     return 0;
   }else{
-    await client.channels.fetch(logi_kanal).send({embeds : [embed]});
+    const kanal = await client.channels.fetch(logi_kanal);
+    await kanal.send({embeds : [embed]});
   }
   
   return 0;
@@ -167,7 +168,9 @@ async function ERROR_brak_komendy(message){
 
 //sprawdza czy oznaczona osoba to Admin
 async function ERROR_brak_permisji(message){
-   if(await message.guild.members.fetch(message.mentions.members.first().id).permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
+
+  const member = await message.guild.members.fetch(message.mentions.members.first().id);
+  if(await member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
     const tekst = "Nie mam uprawnień aby zmienić cokolwiek u tej osoby";
     await EMBED("Brak uprawnień",tekst,error_logo,message,"#ED4245",true);
     return true; //jest błąd
@@ -176,7 +179,7 @@ async function ERROR_brak_permisji(message){
 
 //jeśli nie ma błędów to sprawdza jakie jest polecenie i wykonuje
 async function CHECK(message, osoba, ranga, najemnik,klan){
-  const logi = `KTO: ${message.author}\nKOMU: ${osoba}\nCO:\n `; 
+  let logi = `KTO: ${message.author}\nKOMU: ${osoba}\nCO:\n `; 
     //zmiana nicku
   if(message.args.includes("nick")){
     logi += `${check} zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
