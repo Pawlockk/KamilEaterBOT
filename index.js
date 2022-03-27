@@ -26,6 +26,7 @@ client.on("ready", async () => {
   const zjdcz_embed = "Zmiana w ZJDCZ";
   const zjdcz_logo = "https://eu.wargaming.net/clans/media/clans/emblems/cl_867/500211867/emblem_195x195.png";
   const error_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Cross_red_circle.svg/1024px-Cross_red_circle.svg.png";
+  const check = "<:white_check_mark:957272359675363328>";
 
 async function EMBED(tytul,opis,logo,message,kolor,error){
   
@@ -36,10 +37,10 @@ async function EMBED(tytul,opis,logo,message,kolor,error){
 
   await message.channel.send({embeds : [embed] });
   
-  if(error){
+  if(error){ //sprawdza czy embed ma zwrócić error
     return 0;
   }else{
-    await client.channels.cache.get(logi_kanal).send({embeds : [embed]});
+    await client.channels.fetch(logi_kanal).send({embeds : [embed]});
   }
   
   return 0;
@@ -66,9 +67,9 @@ client.on("messageCreate", async (message) => {
 
 //funkcja dla kanału zjdcz
 async function ZJDCZ(message) {
-  let osoba = message.mentions.members.first(); //przypisuje osobę wspomnianą do zmiennej
-  let ranga = message.guild.roles.cache.get(zjdcz_ranga); // przypisuje rangę klanu do zmiennej
-  let najemnik = message.guild.roles.cache.get(zjdcz_najemnik); // przypisuje rangę najemnika klanu do zmiennej
+  const osoba = message.mentions.members.first(); //przypisuje osobę wspomnianą do zmiennej
+  const ranga = await message.guild.roles.fetch(zjdcz_ranga); // przypisuje rangę klanu do zmiennej
+  const najemnik = await message.guild.roles.fetch(zjdcz_najemnik); // przypisuje rangę najemnika klanu do zmiennej
   
   if(await ERROR(message)){
     await CHECK(message, osoba, ranga, najemnik,"zjdcz");
@@ -79,9 +80,9 @@ async function ZJDCZ(message) {
 
 //funkcja dla kanału scaml
 async function SCAML(message) {
-  let osoba = message.mentions.members.first(); //przypisuje osobę wspomnianą do zmiennej
-  let ranga = message.guild.roles.cache.get(scaml_ranga); // przypisuje rangę klanu do zmiennej
-  let najemnik = message.guild.roles.cache.get(scaml_najemnik);// przypisuje rangę najemnika klanu do zmiennej
+  const osoba = message.mentions.members.first(); //przypisuje osobę wspomnianą do zmiennej
+  const ranga = await message.guild.roles.fetch(scaml_ranga); // przypisuje rangę klanu do zmiennej
+  const najemnik = await message.guild.roles.fetch(scaml_najemnik);// przypisuje rangę najemnika klanu do zmiennej
   
   if(await ERROR(message)){
     await CHECK(message, osoba, ranga, najemnik,"scaml");
@@ -166,7 +167,7 @@ async function ERROR_brak_komendy(message){
 
 //sprawdza czy oznaczona osoba to Admin
 async function ERROR_brak_permisji(message){
-   if(message.guild.members.cache.get(message.mentions.members.first().id).permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
+   if(await message.guild.members.fetch(message.mentions.members.first().id).permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
     const tekst = "Nie mam uprawnień aby zmienić cokolwiek u tej osoby";
     await EMBED("Brak uprawnień",tekst,error_logo,message,"#ED4245",true);
     return true; //jest błąd
@@ -175,34 +176,34 @@ async function ERROR_brak_permisji(message){
 
 //jeśli nie ma błędów to sprawdza jakie jest polecenie i wykonuje
 async function CHECK(message, osoba, ranga, najemnik,klan){
-  let logi = `KTO: ${message.author}\nKOMU: ${osoba}\nCO:\n `; 
+  const logi = `KTO: ${message.author}\nKOMU: ${osoba}\nCO:\n `; 
     //zmiana nicku
   if(message.args.includes("nick")){
-    logi += `<:white_check_mark:957272359675363328> zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
+    logi += `${check} zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n `;
     await osoba.setNickname(message.args[2].toString());
   }
 
   //dawanie rangi
   if(message.args.includes("ranga")){
-    logi += `<:white_check_mark:957272359675363328> dał range ${ranga.name}\n`;
+    logi += `${check} dał range ${ranga.name}\n`;
     await osoba.roles.add(ranga);
   }
 
   //dawanie najemnika
   if(message.args.includes("najemnik")){
-    logi += `<:white_check_mark:957272359675363328> dał range ${najemnik.name}\n`;
+    logi += `${check} dał range ${najemnik.name}\n`;
     await osoba.roles.add(najemnik);
   }
 
   //zabieranie rangi
   if(message.args.includes("wyrzuc")){
-    logi += `<:white_check_mark:957272359675363328> zabrał range ${ranga.name}\n`;
+    logi += `${check} zabrał range ${ranga.name}\n`;
     await osoba.roles.remove(ranga);
   }
 
   //zabieranie najemnika
   if(message.args.includes("zabierz")){
-    logi += `<:white_check_mark:957272359675363328> zabrał range ${najemnik.name}\n`;
+    logi += `${check} zabrał range ${najemnik.name}\n`;
     await osoba.roles.remove(najemnik);
   }
   
@@ -213,7 +214,7 @@ async function CHECK(message, osoba, ranga, najemnik,klan){
   }
   if (klan == "scaml"){
     const kolor = message.guild.roles.cache.get(scaml_ranga).color;
-    await EMBED("Zmiana w ZJDCZ",logi,zjdcz_logo,message,kolor,false);
+    await EMBED("Zmiana w SCAML",logi,scaml_logo,message,kolor,false);
   }
   
   return 0;
