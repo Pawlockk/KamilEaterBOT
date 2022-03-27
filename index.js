@@ -34,10 +34,11 @@ async function EMBED(tytul,opis,logo,message,kolor,error){
   .setColor(kolor)
   .setDescription(opis);
 
+  await message.channel.send({embeds : [embed] });
+  
   if(error){
-    await message.channel.send({embeds : [embed] });
+    return 0;
   }else{
-    await message.channel.send({embeds : [embed] });
     await client.channels.cache.get(logi_kanal).send({embeds : [embed]});
   }
   
