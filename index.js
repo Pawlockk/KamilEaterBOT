@@ -1,5 +1,5 @@
 // Discord AnimeBOT#8064
-const { Client, Intents , MessageEmbed, Permissions } = require("discord.js");
+const { Client, Intents } = require("discord.js");
 const { prefix, zjdcz_kanal, scaml_kanal } = require('./modules/config.json');
 const { ERROR } = require('./modules/error.js');
 const { CHECK } = require('./modules/check.js');

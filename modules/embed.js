@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 const { logi_kanal } = require('./config.json');
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
   if(error){ //sprawdza czy embed ma zwrócić error
     return 0;
   }else{
-    const kanal = await client.channels.fetch(logi_kanal);
+    const kanal = await message.guild.channels.fetch(logi_kanal);
     await kanal.send({embeds : [embed]});
   }
   

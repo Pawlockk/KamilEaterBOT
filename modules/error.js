@@ -1,3 +1,4 @@
+const { Client, Intents, Permissions } = require("discord.js");
 const { error_logo } = require('./config.json');
 const { EMBED } = require('./embed.js');
 

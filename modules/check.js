@@ -1,49 +1,55 @@
-const { check, zjdcz_ranga, zjdcz_logo, scaml_ranga, scaml_logo } = require('./config.json');
+const { Client, Intents } = require("discord.js");
+const { zjdcz_ranga, zjdcz_logo, scaml_ranga, scaml_logo } = require('./config.json');
 const { EMBED } = require('./embed.js');
-
+const check = "<:white_check_mark:957272359675363328>";
 //sprawdza czy jest komenda: nick
 async function CHECK_nick(message, osoba){
+  let logi = "";
   if(message.args.includes("nick")){
     await osoba.setNickname(message.args[2].toString());
-    return `${check} zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n`;
+    logi += `${check} zmiana nicku z ${osoba.displayName} na ${message.args[2]}\n`;
   }
-  return "";
+  return logi;
 }
 
 //sprawdza czy jest komenda: ranga
 async function CHECK_ranga(message, osoba, ranga){
+  let logi = "";
   if(message.args.includes("ranga")){
     await osoba.roles.add(ranga);
-    return `${check} dał range ${ranga.name}\n`;
+    logi += `${check} dał range ${ranga.name}\n`;
   }
-  return "";
+  return logi;
 }
 
 //sprawdza czy jest komenda: najemnik
 async function CHECK_najemnik(message, osoba, najemnik){
+  let logi = "";
   if(message.args.includes("najemnik")){
     await osoba.roles.add(najemnik);
-    return `${check} dał range ${najemnik.name}\n`;
+    logi += `${check} dał range ${najemnik.name}\n`;
   }
-  return "";
+  return logi;
 }
 
 //sprawdza czy jest komenda: wyrzuc
 async function CHECK_wyrzuc(message, osoba, ranga){
-  if(message.args.includes("ranga")){
+  let logi = "";
+  if(message.args.includes("wyrzuc")){
     await osoba.roles.remove(ranga);
-    return `${check} zabrał range ${ranga.name}\n`;
+    logi +=  `${check} zabrał range ${ranga.name}\n`;
   }
-  return "";
+  return logi;
 }
 
 //sprawdza czy jest komenda: zabierz
-async function CHECK_najemnik(message, osoba, najemnik){
-  if(message.args.includes("najemnik")){
+async function CHECK_zabierz(message, osoba, najemnik){
+  let logi = "";
+  if(message.args.includes("zabierz")){
     await osoba.roles.remove(najemnik);
-    return `${check} zabrał range ${najemnik.name}\n`;
+    logi += `${check} zabrał range ${najemnik.name}\n`;
   }
-  return "";
+  return logi;
 }
 
 //odpowiedz

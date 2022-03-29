@@ -1,3 +1,4 @@
+const { Client, Intents } = require("discord.js");
 const { zjdcz_ranga, zjdcz_najemnik, scaml_ranga, scaml_najemnik } = require('./config.json');
 const { EMBED } = require('./embed.js');
 const { ERROR } = require('./error.js');
