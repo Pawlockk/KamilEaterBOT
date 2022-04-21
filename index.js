@@ -76,49 +76,43 @@ client.on("messageReactionRemove", async (reaction, user) => {
 
 const usersMap = new Map();
 const LIMIT = 5;
-const DIFF = 20000;
+const DIFF = 10000;
+
 
 client.on("messageCreate", async(message) => {
-    if(message.author.bot) return;
-    if(message.guild.id != "458738346529783859") return;
-    const embed_mute = new MessageEmbed()
-  .setAuthor("Mute za spam",error_logo,"")
-  .setColor("#ED4245")
-  .setDescription("Spamisz, mute na 6h, jeśli sądzisz że mute ci się nie należy napisz do moderacji");
+  if(message.author.bot) return;
+  if(message.guild.id != "458738346529783859") return;
+  const member = await message.guild.members.fetch(message.author.id);
+  if(member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return;
+
+
+  
+  const embed_mute = new MessageEmbed()
+    .setAuthor("Mute za spam",error_logo,"")
+    .setColor("#ED4245")
+    .setDescription("Spamisz, mute na 6h, jeśli sądzisz że mute ci się nie należy napisz do moderacji");
   
     if(usersMap.has(message.author.id)) {
         const userData = usersMap.get(message.author.id);
         const { lastMessage, timer } = userData;
         const difference = message.createdTimestamp - lastMessage.createdTimestamp;
         let msgCount = userData.msgCount;
-        console.log(message.author.id);
 
         if(difference > DIFF) {
             clearTimeout(timer);
-            console.log('Cleared Timeout');
             userData.msgCount = 1;
             userData.lastMessage = message;
             userData.timer = setTimeout(() => {
                 usersMap.delete(message.author.id);
-                console.log('Removed from map.')
-            }, 1);
+            }, 20000);
             usersMap.set(message.author.id, userData)
         }
         else {
             ++msgCount;
             if(parseInt(msgCount) === LIMIT) {
-              
-                message.reply({embeds: [embed_mute]});
-                const osoba = await message.guild.members.fetch(message.author.id);
-                osoba.roles.add("532308726254796811");
-                setTimeout(() => {
-                osoba.roles.remove("532308726254796811");
-                console.log(`unmuted ${message.author.id}`);
-                }, 2160000);
-                
-              
-              
-               
+              message.reply({embeds: [embed_mute]});
+              member.timeout(6 * 60 * 60 * 1000, 'Spam');
+              clear(message, Date.now());
             } else {
                 userData.msgCount = msgCount;
                 usersMap.set(message.author.id, userData);
@@ -126,22 +120,27 @@ client.on("messageCreate", async(message) => {
         }
     }
     else {
-              const member = await message.guild.members.fetch(message.author.id);
-              if(await member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
-                return;
-              }else {
-                let fn = setTimeout(() => {
-              usersMap.delete(message.author.id);
-              console.log('Removed from map.')
-              }, 20000);
-              usersMap.set(message.author.id, {
-                  msgCount: 1,
-                  lastMessage : message,
-                  timer : fn
-              });}
+      let fn = setTimeout(() => {
+        usersMap.delete(message.author.id);
+        }, 20000);
+        usersMap.set(message.author.id, {
+          msgCount: 1,
+          lastMessage : message,
+          timer : fn
+        });
         
     }
 })
+
+async function clear(message, end){
+  let channels = await message.guild.channels.fetch();
+  let channels_filtr = channels.filter(c => c.type == 'GUILD_TEXT');
+  for (let current of channels_filtr) {
+    let mess = await current[1].messages.fetch();
+    let mess_filtr = mess.filter(m => m.author.id == message.author.id).filter(b => (end - b.createdTimestamp) < 25000 );
+    current[1].bulkDelete(mess_filtr);
+  }
+}
 
 client.login(process.env['token']);
 // HTTP Server
