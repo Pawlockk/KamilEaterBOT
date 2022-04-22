@@ -1,7 +1,7 @@
 // Discord AnimeBOT#8064
 const { Client, Intents, MessageEmbed, Permissions } = require("discord.js");
 const { prefix, zjdcz_kanal, scaml_kanal } = require('./modules/config.json');
-const { id_kanal_reakcje, id_message_reakcje, cebula, forza } = require('./modules/config.json');
+const { id_kanal_reakcje, id_message_reakcje, cebula, forza, logi_kanal } = require('./modules/config.json');
 const { ZJDCZ, SCAML } = require('./modules/klany.js');
 const { error_logo } = require('./modules/config.json');
 
@@ -20,6 +20,7 @@ const client = new Client({
 
 client.on("ready", async () => {
   console.log(client.user.username, client.user.id);
+  
   const kanal_reakcje = await client.channels.fetch(id_kanal_reakcje);
   await kanal_reakcje.messages.fetch(id_message_reakcje);
 });
@@ -47,10 +48,10 @@ client.on("messageReactionAdd", async (reaction, user) => {
       if(reaction.message.id == id_message_reakcje){
         switch(reaction.emoji.name.toLowerCase()){
           case '🧅':
-            await member.roles.add(cebula);
+            member.roles.add(cebula);
             break;
           case '🚗':
-            await member.roles.add(forza);
+            member.roles.add(forza);
             break;
         }
       }
@@ -64,10 +65,10 @@ client.on("messageReactionRemove", async (reaction, user) => {
       if(reaction.message.id == id_message_reakcje){
         switch(reaction.emoji.name.toLowerCase()){
           case '🧅':
-            await member.roles.remove(cebula);
+            member.roles.remove(cebula);
             break;
           case '🚗':
-            await member.roles.remove(forza);
+            member.roles.remove(forza);
             break;
         }
       }
@@ -90,7 +91,7 @@ client.on("messageCreate", async(message) => {
   const embed_mute = new MessageEmbed()
     .setAuthor("Mute za spam",error_logo,"")
     .setColor("#ED4245")
-    .setDescription("Spamisz, mute na 6h, jeśli sądzisz że mute ci się nie należy napisz do moderacji");
+    .setDescription(`${message.author} dostał mute'a za spam na 6h`);
   
     if(usersMap.has(message.author.id)) {
         const userData = usersMap.get(message.author.id);
@@ -110,7 +111,7 @@ client.on("messageCreate", async(message) => {
         else {
             ++msgCount;
             if(parseInt(msgCount) === LIMIT) {
-              message.reply({embeds: [embed_mute]});
+              message.channel.send({embeds: [embed_mute]});
               member.timeout(6 * 60 * 60 * 1000, 'Spam');
               clear(message, Date.now());
             } else {
@@ -133,15 +134,37 @@ client.on("messageCreate", async(message) => {
 })
 
 async function clear(message, end){
+  let logi = "";
   let channels = await message.guild.channels.fetch();
   let channels_filtr = channels.filter(c => c.type == 'GUILD_TEXT');
   for (let current of channels_filtr) {
     let mess = await current[1].messages.fetch();
     let mess_filtr = mess.filter(m => m.author.id == message.author.id).filter(b => (end - b.createdTimestamp) < 25000 );
+    for(let mc of mess_filtr){
+      if(mc[1].content != null) logi += mc[1].content + "\n";
+    }
     current[1].bulkDelete(mess_filtr);
   }
+  const embed_mute_logi = new MessageEmbed()
+    .setAuthor("Mute za spam",error_logo,"")
+    .setColor("#ED4245")
+    .setDescription(`User: ${message.author} \n Wiadomości:\n ${logi}`);
+  const kanal_logi = await client.channels.fetch(logi_kanal);
+  kanal_logi.send({embeds: [embed_mute_logi]});
 }
 
+client.on("guildMemberAdd", async(member) =>{
+  if(member.user.createdTimestamp > (Date.now() - (1000*60*60*48))){
+    member.timeout(24 * 60 * 60 * 1000, 'Do weryfikacji');
+    const embed_verify = new MessageEmbed()
+    .setAuthor("Do weryfikacji",error_logo,"")
+    .setColor("#ED4245")
+    .setDescription(`User: ${member} \n Konto założone: ${(Date.now() - member.user.createdTimestamp)/(1000*60*60)} godzin temu`);
+  const kanal_logi = await client.channels.fetch("531192621281050634");
+  kanal_logi.send({embeds: [embed_verify]});
+  }
+  
+})
 client.login(process.env['token']);
 // HTTP Server
 const http = require('http');
