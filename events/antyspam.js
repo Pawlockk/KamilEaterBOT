@@ -28,6 +28,11 @@ module.exports = {
     bot.on("messageCreate", async(message) => {
       
       const kanal_logi = await bot.channels.fetch(id_kanal_logi);
+      try{
+        await message.guild.members.fetch(message.author.id);
+      }catch(error){
+        return;
+      }
       const member = await message.guild.members.fetch(message.author.id);
       if(message.author.bot) return;
       if(member.permissions.has('ADMINISTRATOR')) return;
