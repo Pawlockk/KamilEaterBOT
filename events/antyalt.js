@@ -6,6 +6,7 @@ module.exports = {
   execute(bot){
     
     bot.on("guildMemberAdd", async(member) =>{
+      if(member.guild.id == '923978699047571466') return;
       
       if(member.user.createdTimestamp > (Date.now() - (1000*60*60*48))){
         

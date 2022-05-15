@@ -33,11 +33,12 @@ for (const eventFile of eventDir) {
   event.execute(bot);
 }
 
-const comDir = fs.readdirSync('./commands').filter(comFile => comFile.endsWith('.js'));
 bot.on('interactionCreate', interaction =>{
   const command = require(`./commands/${interaction.commandName}`);
   command.execute(interaction);
 })
+
+
 
 
 bot.login(process.env['token']);
