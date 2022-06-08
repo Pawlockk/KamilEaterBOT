@@ -15,7 +15,6 @@ for (const commandFile of commandDir) {
 
 module.exports = {
   execute(bot) {
-const discord = require('discord.js');
 bot.db = require("quick.db");
 bot.request = new (require("rss-parser"))();
     // YT notification TEST
@@ -31,7 +30,7 @@ async function handleUploads() {
                   let parsed = await bot.db.fetch(`videoData`);
                   let channel = await bot.channels.fetch('673159464496660501');
                   if (!channel) return;
-                  let message = `Hej @everyone, **KamilEater** właśnie wrzucił filmik! **${discord.Util.escapeMarkdown(parsed.title)}**!\n${parsed.link}`
+                  let message = `Hej @everyone, **KamilEater** właśnie wrzucił filmik!\n \n${parsed.link}`
                   channel.send(message);
                 console.log(data.items[0]);
               }

@@ -2,7 +2,7 @@ const {id_kanal_logi} = require('../config.json');
 const { antispam, antispam_logi } = require('../embedy.js');
 
 //config anti-spam
-const TIME = 20 * 1000;
+const TIME = 10 * 1000;
 const LIMIT = 7;
 const MUTE = 6 * 60 * 60 * 1000;
 
